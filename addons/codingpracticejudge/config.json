@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "model_name": "CodingPractice",
+  "judge0_endpoint": "https://ce.judge0.com",
+  "judge0_api_key": "",
+  "cpu_time_limit": 2,
+  "wall_time_limit": 5,
+  "memory_limit": 128000
+}
