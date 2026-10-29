@@ -1,0 +1,35 @@
+name: Validate and build add-on
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-addon:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Check Python syntax
+        run: python -m compileall -q addon scripts
+
+      - name: Build Anki add-on package
+        run: python scripts/build_addon.py
+
+      - name: Upload installable package
+        uses: actions/upload-artifact@v7
+        with:
+          name: CodingPracticeJudge-ankiaddon
+          path: dist/*.ankiaddon
+          if-no-files-found: error
+          retention-days: 30

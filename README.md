@@ -26,4 +26,6 @@ Restart Anki after add-on changes. Install the note type templates and styling f
 
 From the repository root, run `python3 scripts/build_addon.py`. It creates a `.ankiaddon` ZIP in `dist/` with files at archive root (no enclosing folder), includes `LICENSE`, and refuses a non-empty API key. The package omits `__pycache__`, `.pyc`, profile data, and credentials. Upload it through AnkiWeb's add-on sharing page; AnkiWeb assigns the install code after publication.
 
+GitHub Actions checks Python syntax and builds the package on pushes, pull requests, and manual runs. Download the `.ankiaddon` from the successful run's **Artifacts** section.
+
 See `addon/README.md` for Judge0 setup, limits, privacy, test-case format, and troubleshooting.
