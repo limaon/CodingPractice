@@ -7,7 +7,7 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
-ADDON = ROOT / "addons" / "codingpracticejudge"
+ADDON = ROOT / "addon"
 REQUIRED = (
     "__init__.py",
     "bridge.py",
@@ -24,8 +24,8 @@ def main():
     manifest = json.loads((ADDON / "manifest.json").read_text(encoding="utf-8"))
     config = json.loads((ADDON / "config.json").read_text(encoding="utf-8"))
 
-    if manifest.get("package") != ADDON.name or not manifest.get("name"):
-        raise SystemExit("manifest.json package/name do not match the add-on")
+    if not manifest.get("package") or not manifest.get("name"):
+        raise SystemExit("manifest.json must include package and name")
     if config.get("judge0_api_key"):
         raise SystemExit("Refusing to package a non-empty Judge0 API key")
     match = re.search(r'^VERSION\s*=\s*["\']([^"\']+)', (ADDON / "bridge.py").read_text(encoding="utf-8"), re.M)
