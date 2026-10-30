@@ -72,6 +72,70 @@
   gap: 8px;
 }
 
+.coding-practice #cp-testing,
+.coding-practice #cp-settings {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 4px 0 12px;
+  min-width: 0;
+}
+
+.coding-practice #cp-settings label {
+  display: block;
+  margin: 0;
+}
+
+.coding-practice #cp-testing + div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.coding-practice #cp-settings {
+  flex: 1;
+}
+
+.coding-practice .cp-settings-grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px 16px;
+  padding: 8px 0;
+}
+
+.coding-practice .cp-autocomplete-label {
+  grid-column: 1 / -1;
+}
+
+.coding-practice #cp-settings .cp-actions {
+  flex-wrap: nowrap;
+}
+
+.coding-practice #cp-settings button {
+  margin: 0;
+  padding: 4px 10px;
+}
+
+.coding-practice #cp-font-size {
+  white-space: nowrap;
+}
+
+.coding-practice #cp-settings select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 6px 28px 6px 10px;
+  background: #242424;
+  color: #dedede;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23dedede' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
 .coding-practice details {
   border: 1px solid var(--border);
   border-radius: 5px;
@@ -83,6 +147,53 @@
   padding: 10px 12px;
   font-size: 13px;
   font-weight: bold;
+}
+
+.coding-practice .cp-test-result {
+  --status-bg: #303030;
+  --status-border: #858585;
+}
+
+.coding-practice .cp-test-result[data-status="accepted"] {
+  --status-bg: #20382b;
+  --status-border: #4caf78;
+}
+
+.coding-practice .cp-test-result[data-status="wrong"] {
+  --status-bg: #402626;
+  --status-border: #e57373;
+}
+
+.coding-practice .cp-test-result[data-status="timeout"] {
+  --status-bg: #3d3320;
+  --status-border: #ddb65f;
+}
+
+.coding-practice .cp-test-result[data-status="compilation"] {
+  --status-bg: #402e22;
+  --status-border: #e69a60;
+}
+
+.coding-practice .cp-test-result[data-status="runtime"] {
+  --status-bg: #35283f;
+  --status-border: #b58adb;
+}
+
+.coding-practice .cp-test-result[data-status="service"] {
+  --status-bg: #28323d;
+  --status-border: #8ca3bc;
+}
+
+.coding-practice .cp-test-result[data-status="pending"] {
+  --status-bg: #213448;
+  --status-border: #64a9e8;
+}
+
+.coding-practice .cp-test-result > summary {
+  background: var(--status-bg);
+  border-left: 4px solid var(--status-border);
+  border-radius: 4px;
+  color: #e6e6e6;
 }
 
 .coding-practice .cp-details {

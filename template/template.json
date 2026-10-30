@@ -14,5 +14,19 @@
     "Explanation",
     "Source"
   ],
-  "cardTemplates": ["Card 1"]
+  "cardTemplates": ["Card 1"],
+  "fieldDescriptions": {
+    "Description": "Descreva o problema e o que deve ser resolvido.",
+    "Language": "Linguagem da solução. Exemplos: python, javascript, cpp, java.",
+    "Input Format": "Descreva os dados de entrada: valores, ordem e separação por espaços ou linhas.",
+    "Output Format": "Descreva a saída esperada e sua formatação.",
+    "Constraints": "Informe os limites dos dados. Exemplo: 1 ≤ N ≤ 100000. Opcional.",
+    "Examples": "Lista JSON de exemplos: [{\"input\":\"2 3\\n\",\"output\":\"5\\n\"}]. Use strings e \\n para quebras de linha.",
+    "Hint": "Dê uma pista sobre a abordagem, sem revelar a solução. Opcional.",
+    "Starter Code": "Código inicial na linguagem escolhida, para completar no editor. Inclua a estrutura de leitura da entrada.",
+    "Test Cases": "Lista JSON com 1 a 10 testes: [{\"input\":\"2 3\\n\",\"expected\":\"5\\n\"}]. Use strings, inclua casos extremos e \\n para quebras de linha.",
+    "Solution": "Solução de referência completa e executável na linguagem escolhida, lendo a entrada e imprimindo a saída esperada.",
+    "Explanation": "Explique o raciocínio, os casos especiais e a complexidade de tempo e espaço.",
+    "Source": "Link ou referência da origem do exercício. Opcional."
+  }
 }

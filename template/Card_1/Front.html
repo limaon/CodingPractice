@@ -65,7 +65,8 @@
     {{/Test Cases}}
   </section>
   <div class="cp-grid">
-    <div>
+    <fieldset id="cp-testing">
+      <legend>Solution Testing</legend>
       <p id="cp-save-status" class="cp-status" role="status">
         You can also solve the problem mentally and reveal the suggested
         solution.
@@ -93,8 +94,54 @@
       <p id="cp-addon-status" class="cp-status" role="status" hidden>
         Desktop add-on connection has not been checked.
       </p>
+    </fieldset>
+    <div>
+      <button id="cp-show-settings" type="button" hidden>
+        Editor Settings
+      </button>
+      <fieldset id="cp-settings" disabled>
+        <legend>Editor Settings</legend>
+        <div class="cp-settings-grid">
+          <label for="cp-font-size">Font size</label>
+          <div class="cp-actions">
+            <button
+              id="cp-font-minus"
+              type="button"
+              aria-label="Decrease font size"
+            >
+              −
+            </button>
+            <output id="cp-font-size">16 px</output>
+            <button
+              id="cp-font-plus"
+              type="button"
+              aria-label="Increase font size"
+            >
+              +
+            </button>
+          </div>
+          <label class="cp-autocomplete-label"
+            ><input id="cp-autocomplete" type="checkbox" /> Autocomplete</label
+          >
+          <label for="cp-keybinds">Keybinds</label>
+          <select id="cp-keybinds">
+            <option value="default">Default</option>
+            <option value="vim">Vim</option>
+            <option value="emacs">Emacs</option>
+          </select>
+          <label for="cp-theme">Editor theme</label>
+          <select id="cp-theme">
+            <option value="vscode">VS Code (dark)</option>
+            <option value="monokai">Monokai (dark)</option>
+            <option value="tomorrow_night">Tomorrow Night (dark)</option>
+            <option value="github">GitHub (light)</option>
+            <option value="textmate">TextMate (light)</option>
+          </select>
+        </div>
+        <p id="cp-settings-status" class="cp-status" role="status"></p>
+      </fieldset>
+      <div id="cp-test-results" aria-live="polite" hidden></div>
     </div>
-    <div id="cp-test-results" aria-live="polite"></div>
   </div>
 </main>
 <script>
@@ -107,7 +154,17 @@
     var button = document.getElementById("cp-check-addon");
     var status = document.getElementById("cp-addon-status");
     if (!root || !button) return;
+    var settings = document.getElementById("cp-settings");
+    var showSettings = document.getElementById("cp-show-settings");
+    showSettings.addEventListener("click", function () {
+      settings.hidden = false;
+      results.hidden = true;
+      showSettings.hidden = true;
+    });
     runButton.addEventListener("click", function () {
+      settings.hidden = true;
+      results.hidden = false;
+      showSettings.hidden = false;
       runStatus.hidden = false;
       status.hidden = true;
     });
@@ -164,6 +221,16 @@
       result.results.forEach(function (item) {
         var details = document.createElement("details");
         details.className = "cp-test-result";
+        var statusId = item.statusId;
+        var tone = "neutral";
+        if (statusId === 3) tone = "accepted";
+        else if (statusId === 4) tone = "wrong";
+        else if (statusId === 5) tone = "timeout";
+        else if (statusId === 6) tone = "compilation";
+        else if (statusId >= 7 && statusId <= 12) tone = "runtime";
+        else if (statusId === 13 || statusId === 14) tone = "service";
+        else if (statusId === 1 || statusId === 2) tone = "pending";
+        details.dataset.status = tone;
         var summary = document.createElement("summary");
         summary.textContent = "Test " + item.case + ": " + item.verdict;
         details.appendChild(summary);
@@ -349,6 +416,10 @@
   charset="utf-8"
 ></script>
 <script src="_theme-vscode.js" charset="utf-8"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ext-language_tools.min.js"
+  charset="utf-8"
+></script>
 <script>
   (function () {
     "use strict";
@@ -477,10 +548,111 @@
         fontSize: "16px",
         fontFamily: "CodingMono, monospace",
         showPrintMargin: false,
+        highlightActiveLine: false,
         tabSize: 4,
         useSoftTabs: true,
       });
       editor.setValue(input.value, -1);
+      var preferences = {
+        fontSize: 16,
+        keybinds: "default",
+        autocomplete: false,
+        theme: "vscode",
+      };
+      var settingsStatus = document.getElementById("cp-settings-status");
+      try {
+        var stored = JSON.parse(
+          localStorage.getItem("coding_practice_editor_settings") || "null",
+        );
+        if (stored) {
+          if (
+            Number.isInteger(stored.fontSize) &&
+            stored.fontSize >= 10 &&
+            stored.fontSize <= 32
+          )
+            preferences.fontSize = stored.fontSize;
+          if (["default", "vim", "emacs"].indexOf(stored.keybinds) !== -1)
+            preferences.keybinds = stored.keybinds;
+          if (typeof stored.autocomplete === "boolean")
+            preferences.autocomplete = stored.autocomplete;
+          if (
+            [
+              "vscode",
+              "monokai",
+              "tomorrow_night",
+              "github",
+              "textmate",
+            ].indexOf(stored.theme) !== -1
+          )
+            preferences.theme = stored.theme;
+        }
+      } catch (error) {}
+      var fontSize = document.getElementById("cp-font-size");
+      var minus = document.getElementById("cp-font-minus");
+      var plus = document.getElementById("cp-font-plus");
+      var keybinds = document.getElementById("cp-keybinds");
+      var autocomplete = document.getElementById("cp-autocomplete");
+      var theme = document.getElementById("cp-theme");
+      var completionAvailable = !!ace.require("ace/ext/language_tools");
+      autocomplete.disabled = !completionAvailable;
+      if (!completionAvailable)
+        settingsStatus.textContent =
+          "Autocomplete could not be loaded. Reopen the card while online.";
+      function applyPreferences(persist) {
+        editor.setFontSize(preferences.fontSize);
+        input.style.fontSize = preferences.fontSize + "px";
+        editor.setKeyboardHandler(
+          preferences.keybinds === "default"
+            ? null
+            : "ace/keyboard/" + preferences.keybinds,
+        );
+        editor.setTheme("ace/theme/" + preferences.theme);
+        if (completionAvailable)
+          editor.setOptions({
+            enableBasicAutocompletion: preferences.autocomplete,
+            enableLiveAutocompletion: preferences.autocomplete,
+          });
+        fontSize.textContent = preferences.fontSize + " px";
+        minus.disabled = preferences.fontSize <= 10;
+        plus.disabled = preferences.fontSize >= 32;
+        keybinds.value = preferences.keybinds;
+        autocomplete.checked = completionAvailable && preferences.autocomplete;
+        theme.value = preferences.theme;
+        editor.resize();
+        if (persist) {
+          try {
+            localStorage.setItem(
+              "coding_practice_editor_settings",
+              JSON.stringify(preferences),
+            );
+          } catch (error) {
+            settingsStatus.textContent =
+              "Preferences apply to this card, but could not be saved on this device.";
+          }
+        }
+      }
+      minus.addEventListener("click", function () {
+        preferences.fontSize = Math.max(10, preferences.fontSize - 1);
+        applyPreferences(true);
+      });
+      plus.addEventListener("click", function () {
+        preferences.fontSize = Math.min(32, preferences.fontSize + 1);
+        applyPreferences(true);
+      });
+      keybinds.addEventListener("change", function () {
+        preferences.keybinds = keybinds.value;
+        applyPreferences(true);
+      });
+      autocomplete.addEventListener("change", function () {
+        preferences.autocomplete = autocomplete.checked;
+        applyPreferences(true);
+      });
+      theme.addEventListener("change", function () {
+        preferences.theme = theme.value;
+        applyPreferences(true);
+      });
+      applyPreferences(false);
+      document.getElementById("cp-settings").disabled = false;
       editor.on("change", function () {
         input.value = editor.getValue();
         save(input.value);
@@ -490,6 +662,9 @@
     } catch (error) {
       if (editor) editor.destroy();
       window.cpEditor = null;
+      document.getElementById("cp-settings").disabled = true;
+      document.getElementById("cp-settings-status").textContent =
+        "Editor settings unavailable: using the plain text editor.";
       container.hidden = true;
       input.hidden = false;
     }
