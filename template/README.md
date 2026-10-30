@@ -16,7 +16,6 @@ This version does not execute code or grade answers. **Test Solution** is disabl
 
 | Field         | Format / purpose                                    |
 | ------------- | --------------------------------------------------- |
-| Title         | Problem title                                       |
 | Description   | Statement and requirements; HTML allowed            |
 | Language      | e.g. `python`, `javascript`, `cpp`, `java`          |
 | Input Format  | Optional description of standard input              |

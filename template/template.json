@@ -1,7 +1,6 @@
 {
   "modelName": "CodingPractice",
   "inOrderFields": [
-    "Title",
     "Description",
     "Language",
     "Input Format",

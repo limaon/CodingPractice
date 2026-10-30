@@ -1,37 +1,50 @@
 <main class="coding-practice" id="cp-front">
-  <div class="cp-meta">
-    <span class="cp-language" id="cp-language">{{Language}}</span
-    ><span>{{Tags}}</span>
-  </div>
-  <h1 id="cp-title">{{Title}}</h1>
+  <span id="cp-language" hidden>{{Language}}</span>
+  <div class="cp-meta" id="cp-tags">{{Tags}}</div>
+  <script>
+    (function () {
+      var tags = document.getElementById("cp-tags");
+      var names = tags.textContent.trim().split(/\s+/).filter(Boolean);
+      tags.replaceChildren();
+      names.forEach(function (name) {
+        var tag = document.createElement("span");
+        tag.className = "cp-tag";
+        tag.textContent = name.split("::").pop();
+        tags.appendChild(tag);
+      });
+    })();
+  </script>
   <section>
     <h2>Problem</h2>
     <div id="cp-description">{{Description}}</div>
   </section>
-  <div class="cp-grid">
-    {{#Input Format}}
-    <section>
-      <h2>Input Format</h2>
-      {{Input Format}}
-    </section>
-    {{/Input Format}} {{#Output Format}}
-    <section>
-      <h2>Output Format</h2>
-      {{Output Format}}
-    </section>
-    {{/Output Format}}
-  </div>
+  <details>
+    <summary>Input / Output Format</summary>
+    <div class="cp-details cp-grid">
+      {{#Input Format}}
+      <section>
+        <h2>Input Format</h2>
+        {{Input Format}}
+      </section>
+      {{/Input Format}} {{#Output Format}}
+      <section>
+        <h2>Output Format</h2>
+        {{Output Format}}
+      </section>
+      {{/Output Format}}
+    </div>
+  </details>
   {{#Constraints}}
   <details>
     <summary>Constraints</summary>
     <div class="cp-details">{{Constraints}}</div>
   </details>
   {{/Constraints}} {{#Examples}}
-  <section>
-    <h2>Examples</h2>
-    <div id="cp-examples"></div>
+  <details>
+    <summary>Examples</summary>
+    <div id="cp-examples" class="cp-details"></div>
     <div id="cp-examples-data" hidden>{{Examples}}</div>
-  </section>
+  </details>
   {{/Examples}} {{#Hint}}
   <details>
     <summary>Hint</summary>
@@ -50,22 +63,39 @@
     {{#Test Cases}}
     <div id="cp-test-cases-data" hidden>{{Test Cases}}</div>
     {{/Test Cases}}
-    <p id="cp-save-status" class="cp-status" role="status">
-      You can also solve the problem mentally and reveal the suggested solution.
-    </p>
   </section>
-  <button id="cp-test-solution" type="button" aria-describedby="cp-run-status">
-    Test Solution
-  </button>
-  <p id="cp-run-status" class="cp-status">
-    Your code and test inputs will be sent to the configured Judge0 service for
-    execution.
-  </p>
-  <div id="cp-test-results" aria-live="polite"></div>
-  <button id="cp-check-addon" type="button">Check Add-on Connection</button>
-  <p id="cp-addon-status" class="cp-status" role="status">
-    Desktop add-on connection has not been checked.
-  </p>
+  <div class="cp-grid">
+    <div>
+      <p id="cp-save-status" class="cp-status" role="status">
+        You can also solve the problem mentally and reveal the suggested
+        solution.
+      </p>
+      <div class="cp-actions">
+        <button
+          id="cp-test-solution"
+          type="button"
+          aria-describedby="cp-run-status"
+        >
+          Test Solution
+        </button>
+        <button
+          id="cp-check-addon"
+          type="button"
+          aria-describedby="cp-addon-status"
+        >
+          Check Add-on Connection
+        </button>
+      </div>
+      <p id="cp-run-status" class="cp-status">
+        Your code and test inputs will be sent to the configured Judge0 service
+        for execution.
+      </p>
+      <p id="cp-addon-status" class="cp-status" role="status" hidden>
+        Desktop add-on connection has not been checked.
+      </p>
+    </div>
+    <div id="cp-test-results" aria-live="polite"></div>
+  </div>
 </main>
 <script>
   (function () {
@@ -77,6 +107,14 @@
     var button = document.getElementById("cp-check-addon");
     var status = document.getElementById("cp-addon-status");
     if (!root || !button) return;
+    runButton.addEventListener("click", function () {
+      runStatus.hidden = false;
+      status.hidden = true;
+    });
+    button.addEventListener("click", function () {
+      runStatus.hidden = true;
+      status.hidden = false;
+    });
     function plainText(element) {
       var copy = element.cloneNode(true);
       copy.querySelectorAll("br").forEach(function (br) {
@@ -336,7 +374,6 @@
       .trim()
       .toLowerCase();
     var key = JSON.stringify([
-      fieldText(document.getElementById("cp-title")),
       fieldText(document.getElementById("cp-description")),
       language,
     ]);

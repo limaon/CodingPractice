@@ -1,9 +1,19 @@
 <main class="coding-practice" id="cp-back">
-  <div class="cp-meta">
-    <span class="cp-language" id="cp-language">{{Language}}</span
-    ><span>{{Tags}}</span>
-  </div>
-  <h1 id="cp-title">{{Title}}</h1>
+  <span id="cp-language" hidden>{{Language}}</span>
+  <div class="cp-meta" id="cp-tags">{{Tags}}</div>
+  <script>
+    (function () {
+      var tags = document.getElementById("cp-tags");
+      var names = tags.textContent.trim().split(/\s+/).filter(Boolean);
+      tags.replaceChildren();
+      names.forEach(function (name) {
+        var tag = document.createElement("span");
+        tag.className = "cp-tag";
+        tag.textContent = name.split("::").pop();
+        tags.appendChild(tag);
+      });
+    })();
+  </script>
   <details>
     <summary>Problem</summary>
     <div class="cp-details">
@@ -80,7 +90,6 @@
       .toLowerCase();
     var description = fieldText(document.getElementById("cp-description"));
     var key = JSON.stringify([
-      fieldText(document.getElementById("cp-title")),
       description,
       language,
     ]);
