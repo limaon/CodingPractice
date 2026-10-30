@@ -49,7 +49,7 @@
   {{/Explanation}}
   <footer>
     {{#Source}}
-    <div>{{Source}}</div>
+    <div id="cp-source">{{Source}}</div>
     {{/Source}}
     <a
       id="cp-chatgpt"
@@ -69,6 +69,20 @@
   (function () {
     "use strict";
     if (!document.getElementById("cp-back")) return;
+    var sourceField = document.getElementById("cp-source");
+    if (sourceField) {
+      var query = fieldText(sourceField).trim();
+      if (query) {
+        var youtubeLink = document.createElement("a");
+        youtubeLink.href =
+          "https://www.youtube.com/results?search_query=" +
+          encodeURIComponent(query);
+        youtubeLink.target = "_blank";
+        youtubeLink.rel = "noopener noreferrer";
+        youtubeLink.textContent = "YouTube · Pesquisar";
+        sourceField.replaceChildren(youtubeLink);
+      }
+    }
     function fieldText(element) {
       var copy = element.cloneNode(true);
       copy.querySelectorAll("br").forEach(function (br) {
@@ -89,10 +103,7 @@
       .trim()
       .toLowerCase();
     var description = fieldText(document.getElementById("cp-description"));
-    var key = JSON.stringify([
-      description,
-      language,
-    ]);
+    var key = JSON.stringify([description, language]);
     var status = document.getElementById("cp-answer-status");
     try {
       var answer = JSON.parse(
@@ -148,6 +159,39 @@
       sql: "sql",
       bash: "sh",
     };
+    var answerDetails = document.getElementById("cp-your-answer");
+    if (!answerDetails.hidden) {
+      var answerSource = document.getElementById("cp-answer");
+      var answerContainer = document.createElement("div");
+      answerContainer.className = "cp-editor";
+      answerSource.before(answerContainer);
+      var answerEditor;
+      try {
+        answerEditor = ace.edit(answerContainer);
+        answerEditor.setTheme("ace/theme/vscode");
+        answerEditor.session.setUseWorker(false);
+        answerEditor.session.setMode("ace/mode/" + (modes[language] || "text"));
+        answerEditor.setOptions({
+          readOnly: true,
+          fontSize: "16px",
+          fontFamily: "CodingMono, monospace",
+          showPrintMargin: false,
+          highlightActiveLine: false,
+          minLines: 4,
+          maxLines: 18,
+        });
+        answerEditor.setValue(answerSource.textContent, -1);
+        answerSource.hidden = true;
+        answerDetails.addEventListener("toggle", function () {
+          if (answerDetails.open) answerEditor.resize();
+        });
+        answerEditor.resize();
+      } catch (error) {
+        if (answerEditor) answerEditor.destroy();
+        answerContainer.remove();
+        answerSource.hidden = false;
+      }
+    }
     var container = document.getElementById("cp-solution-editor");
     var editor;
     try {
